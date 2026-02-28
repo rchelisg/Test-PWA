@@ -38,6 +38,28 @@
             }
         }
         
+        /* 针对移动设备的特殊处理 */
+        @media (max-width: 768px) {
+            body {
+                height: 100%;
+                min-height: 100vh;
+                position: relative;
+            }
+            
+            .app-container {
+                display: flex;
+                flex-direction: column;
+                min-height: 100vh;
+                height: 100%;
+            }
+            
+            .subscreen-area {
+                flex: 1;
+                overflow-y: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+        }
+        
         /* 标题区 */
         .header {
             background-color: #81C784; /* 浅绿色 */
@@ -240,30 +262,32 @@
     </style>
 </head>
 <body>
-    <!-- 标题区 -->
-    <div class="header">
-        Battery Run Time Calculator
-    </div>
-    
-    <!-- 按键区 -->
-    <div class="button-area">
-        <div class="button">Calc</div>
-        <div class="button">DfTime</div>
-        <div class="button">DfCost</div>
-        <div class="button">DfLoad</div>
-    </div>
-    
-    <!-- 子屏幕区域 -->
-    <div class="subscreen-area">
-        <div>
-            <div id="subscreen-content">[子屏幕内容将在此显示]</div>
-            <div id="subscreen-timestamp" style="font-size: 0.8em; margin-top: 20px; opacity: 0.7;"></div>
+    <div class="app-container">
+        <!-- 标题区 -->
+        <div class="header">
+            Battery Run Time Calculator
         </div>
-    </div>
-    
-    <!-- 注脚区 -->
-    <div class="footer">
-        <span id="timestamp"></span> (c) 2026
+        
+        <!-- 按键区 -->
+        <div class="button-area">
+            <div class="button">Calc</div>
+            <div class="button">DfTime</div>
+            <div class="button">DfCost</div>
+            <div class="button">DfLoad</div>
+        </div>
+        
+        <!-- 子屏幕区域 -->
+        <div class="subscreen-area">
+            <div>
+                <div id="subscreen-content">[子屏幕内容将在此显示]</div>
+                <div id="subscreen-timestamp" style="font-size: 0.8em; margin-top: 20px; opacity: 0.7;"></div>
+            </div>
+        </div>
+        
+        <!-- 注脚区 -->
+        <div class="footer">
+            <span id="timestamp"></span> (c) 2026
+        </div>
     </div>
     
     <script>
@@ -311,6 +335,30 @@
             }
         }
         
+        // 动态调整子屏幕高度的函数
+        function adjustSubscreenHeight() {
+            const appContainer = document.querySelector('.app-container');
+            const header = document.querySelector('.header');
+            const buttonArea = document.querySelector('.button-area');
+            const footer = document.querySelector('.footer');
+            const subscreen = document.querySelector('.subscreen-area');
+            
+            if (appContainer && header && buttonArea && footer && subscreen) {
+                const containerHeight = appContainer.offsetHeight;
+                const headerHeight = header.offsetHeight;
+                const buttonAreaHeight = buttonArea.offsetHeight;
+                const footerHeight = footer.offsetHeight;
+                
+                // 计算子屏幕的可用高度
+                const subscreenHeight = containerHeight - headerHeight - buttonAreaHeight - footerHeight;
+                
+                // 设置子屏幕高度
+                if (subscreenHeight > 0) {
+                    subscreen.style.height = `${subscreenHeight}px`;
+                }
+            }
+        }
+        
         // 页面加载完成后默认显示Calc子屏幕
         window.addEventListener('load', () => {
             subscreen.classList.add('subscreen-calc');
@@ -323,7 +371,13 @@
             
             // 生成并显示时间戳
             setAppTimestamp();
+            
+            // 初始调整子屏幕高度
+            adjustSubscreenHeight();
         });
+        
+        // 窗口大小变化时重新调整子屏幕高度
+        window.addEventListener('resize', adjustSubscreenHeight);
         
         buttons.forEach(button => {
             button.addEventListener('click', () => {
