@@ -224,7 +224,10 @@
     
     <!-- 子屏幕区域 -->
     <div class="subscreen-area">
-        [子屏幕内容将在此显示]
+        <div>
+            <div id="subscreen-content">[子屏幕内容将在此显示]</div>
+            <div id="subscreen-timestamp" style="font-size: 0.8em; margin-top: 20px; opacity: 0.7;"></div>
+        </div>
     </div>
     
     <!-- 注脚区 -->
@@ -244,24 +247,43 @@
         const buttons = document.querySelectorAll('.button');
         const subscreen = document.querySelector('.subscreen-area');
         
-        // 页面加载完成后默认显示Calc子屏幕
-        window.addEventListener('load', () => {
-            subscreen.classList.add('subscreen-calc');
-            subscreen.textContent = 'Calc 子屏幕';
-            // 默认将Calc按钮设置为active状态
-            buttons[0].classList.add('active');
-            
-            // 生成并显示时间戳
-            const timestampElement = document.getElementById('timestamp');
+        // 生成并显示时间戳的函数
+        function updateTimestamps() {
             const now = new Date();
             const timestamp = now.toLocaleString('zh-CN', {
                 year: 'numeric',
                 month: '2-digit',
                 day: '2-digit',
                 hour: '2-digit',
-                minute: '2-digit'
+                minute: '2-digit',
+                second: '2-digit'
             });
-            timestampElement.textContent = timestamp + ' ';
+            
+            // 更新注脚区时间戳
+            const timestampElement = document.getElementById('timestamp');
+            if (timestampElement) {
+                timestampElement.textContent = timestamp + ' ';
+            }
+            
+            // 更新子屏幕时间戳
+            const subscreenTimestampElement = document.getElementById('subscreen-timestamp');
+            if (subscreenTimestampElement) {
+                subscreenTimestampElement.textContent = '更新时间: ' + timestamp;
+            }
+        }
+        
+        // 页面加载完成后默认显示Calc子屏幕
+        window.addEventListener('load', () => {
+            subscreen.classList.add('subscreen-calc');
+            const subscreenContent = document.getElementById('subscreen-content');
+            if (subscreenContent) {
+                subscreenContent.textContent = 'Calc 子屏幕';
+            }
+            // 默认将Calc按钮设置为active状态
+            buttons[0].classList.add('active');
+            
+            // 生成并显示时间戳
+            updateTimestamps();
         });
         
         buttons.forEach(button => {
@@ -292,7 +314,15 @@
                         break;
                 }
                 
-                subscreen.textContent = `${buttonText} 子屏幕`;
+                // 更新子屏幕内容
+                const subscreenContent = document.getElementById('subscreen-content');
+                if (subscreenContent) {
+                    subscreenContent.textContent = `${buttonText} 子屏幕`;
+                }
+                
+                // 更新时间戳
+                updateTimestamps();
+                
                 // 这里可以添加清空数据的逻辑
             });
         });
