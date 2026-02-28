@@ -229,7 +229,7 @@
     
     <!-- 注脚区 -->
     <div class="footer">
-        (c) 2026
+        <span id="timestamp"></span> (c) 2026
     </div>
     
     <script>
@@ -250,6 +250,18 @@
             subscreen.textContent = 'Calc 子屏幕';
             // 默认将Calc按钮设置为active状态
             buttons[0].classList.add('active');
+            
+            // 生成并显示时间戳
+            const timestampElement = document.getElementById('timestamp');
+            const now = new Date();
+            const timestamp = now.toLocaleString('zh-CN', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            timestampElement.textContent = timestamp + ' ';
         });
         
         buttons.forEach(button => {
