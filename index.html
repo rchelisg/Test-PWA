@@ -254,17 +254,25 @@
         const buttons = document.querySelectorAll('.button');
         const subscreen = document.querySelector('.subscreen-area');
         
-        // 生成并显示时间戳的函数（只在应用生成时调用一次）
+        // 生成并显示时间戳的函数（使用localStorage确保同一版本时间戳固定）
         function setAppTimestamp() {
-            const now = new Date();
-            const timestamp = now.toLocaleString('zh-CN', {
-                year: 'numeric',
-                month: '2-digit',
-                day: '2-digit',
-                hour: '2-digit',
-                minute: '2-digit',
-                second: '2-digit'
-            });
+            // 检查localStorage中是否已有时间戳
+            let timestamp = localStorage.getItem('appTimestamp');
+            
+            // 如果没有，生成一个新的并存储
+            if (!timestamp) {
+                const now = new Date();
+                timestamp = now.toLocaleString('zh-CN', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit'
+                });
+                // 存储时间戳
+                localStorage.setItem('appTimestamp', timestamp);
+            }
             
             // 更新注脚区时间戳
             const timestampElement = document.getElementById('timestamp');
@@ -289,7 +297,7 @@
             // 默认将Calc按钮设置为active状态
             buttons[0].classList.add('active');
             
-            // 生成并显示时间戳（只调用一次）
+            // 生成并显示时间戳
             setAppTimestamp();
         });
         
