@@ -124,6 +124,12 @@
         /* 修复下拉刷新问题 */
         body {
             overscroll-behavior: auto;
+            overflow-y: auto;
+        }
+        
+        /* 确保子屏幕区域不影响下拉刷新 */
+        .subscreen-area {
+            overscroll-behavior: contain;
         }
         
         /* 确保所有元素都不会导致水平滚动 */
