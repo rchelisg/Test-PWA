@@ -286,7 +286,6 @@
         <div class="subscreen-area">
             <div>
                 <div id="subscreen-content">[子屏幕内容将在此显示]</div>
-                <div id="subscreen-timestamp" style="font-size: 0.8em; margin-top: 20px; opacity: 0.7;"></div>
             </div>
         </div>
         
@@ -332,12 +331,6 @@
             const timestampElement = document.getElementById('timestamp');
             if (timestampElement) {
                 timestampElement.textContent = timestamp + ' ';
-            }
-            
-            // 更新子屏幕时间戳
-            const subscreenTimestampElement = document.getElementById('subscreen-timestamp');
-            if (subscreenTimestampElement) {
-                subscreenTimestampElement.textContent = '应用生成时间: ' + timestamp;
             }
         }
         
