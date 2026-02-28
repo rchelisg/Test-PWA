@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
     <title>Battery Run Time Calculator</title>
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#81C784">
@@ -22,9 +22,14 @@
             background-color: #f5f5f5;
             color: #333;
             height: 100vh;
-            overflow: hidden; /* 禁止左右滑动 */
+            overflow: hidden; /* 禁止所有方向的滚动 */
+            overflow-x: hidden; /* 明确禁止水平滚动 */
             display: flex;
             flex-direction: column;
+            position: fixed; /* 固定定位，防止滚动 */
+            width: 100%; /* 确保宽度为100% */
+            left: 0;
+            top: 0;
         }
         
         /* 标题区 */
@@ -90,6 +95,18 @@
         /* 修复下拉刷新问题 */
         body {
             overscroll-behavior: auto;
+        }
+        
+        /* 确保所有元素都不会导致水平滚动 */
+        * {
+            max-width: 100%;
+            box-sizing: border-box;
+        }
+        
+        /* 按键区确保不会溢出 */
+        .button-area {
+            width: 100%;
+            overflow: hidden;
         }
         
         /* 子屏幕背景颜色 */
