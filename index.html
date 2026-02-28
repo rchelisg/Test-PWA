@@ -2,40 +2,287 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>最简单的PWA应用</title>
-    <link rel="stylesheet" href="styles.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Battery Run Time Calculator</title>
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#ffffff">
+    <meta name="theme-color" content="#81C784">
     <link rel="apple-touch-icon" href="icons/icon.svg">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="PWA示例">
+    <meta name="apple-mobile-web-app-title" content="Battery Calculator">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+            height: 100vh;
+            overflow: hidden; /* 禁止左右滑动 */
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* 标题区 */
+        .header {
+            background-color: #81C784; /* 浅绿色 */
+            color: white;
+            padding: 12px; /* 减小约25%的高度 */
+            text-align: center;
+            font-size: 16px; /* 减小字体大小 */
+            font-weight: 600;
+        }
+        
+        /* 按键区 */
+        .button-area {
+            display: flex;
+            flex-direction: row;
+            padding: 8px 16px; /* 减小上下内边距 */
+            gap: 16px;
+            background-color: white;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .button {
+            flex: 1;
+            padding: 4px 8px; /* 减小内边距 */
+            background-color: transparent;
+            border: none;
+            text-align: center;
+            font-size: 14px;
+            font-weight: 500;
+            color: #666;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        
+        .button:active {
+            color: #2196F3;
+        }
+        
+        /* 当前页面的下划线样式 */
+        .button.active {
+            color: #2196F3;
+            border-bottom: 2px solid #2196F3;
+        }
+        
+        /* 子屏幕区域 */
+        .subscreen-area {
+            flex: 1;
+            background-color: white;
+            margin: 0;
+            border-radius: 0;
+            box-shadow: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: 500;
+            color: #333;
+        }
+        
+        /* 子屏幕背景颜色 */
+        .subscreen-calc {
+            background-color: #FFCDD2; /* 浅红 */
+        }
+        
+        .subscreen-dftime {
+            background-color: #BBDEFB; /* 浅蓝 */
+        }
+        
+        .subscreen-dfcost {
+            background-color: #FFF3E0; /* 浅黄 */
+        }
+        
+        .subscreen-dfload {
+            background-color: #E0E0E0; /* 浅灰 */
+        }
+        
+        /* 注脚区 */
+        .footer {
+            padding: 11px; /* 减少30%左右的高度 */
+            text-align: center;
+            font-size: 11px; /* 略微减小字体大小 */
+            color: #666; /* 深灰色 */
+        }
+        
+        /* 响应式设计 - 适配苹果手机14到17的所有屏幕尺寸 */
+        
+        /* 小屏幕设备 (iPhone SE, iPhone 12 mini等) */
+        @media screen and (max-width: 320px) {
+            .header {
+                font-size: 12px;
+                padding: 9px; /* 减小约25%的高度 */
+            }
+            
+            .button {
+                font-size: 10px;
+                padding: 4px 6px;
+            }
+            
+            .subscreen-area {
+                font-size: 16px;
+            }
+            
+            .footer {
+                font-size: 9px;
+                padding: 8.4px; /* 减少30%左右的高度 */
+            }
+        }
+        
+        /* 中等屏幕设备 (iPhone 14, iPhone 15等) */
+        @media screen and (min-width: 321px) and (max-width: 375px) {
+            .header {
+                font-size: 14px;
+                padding: 10.5px; /* 减小约25%的高度 */
+            }
+            
+            .button {
+                font-size: 12px;
+                padding: 4px 8px;
+            }
+            
+            .subscreen-area {
+                font-size: 18px;
+            }
+            
+            .footer {
+                font-size: 10px;
+                padding: 9.8px; /* 减少30%左右的高度 */
+            }
+        }
+        
+        /* 大屏幕设备 (iPhone 14 Plus, iPhone 15 Plus, iPhone 16 Pro Max等) */
+        @media screen and (min-width: 376px) and (max-width: 428px) {
+            .header {
+                font-size: 16px;
+                padding: 12px; /* 减小约25%的高度 */
+            }
+            
+            .button {
+                font-size: 14px;
+                padding: 4px 8px;
+            }
+            
+            .subscreen-area {
+                font-size: 20px;
+            }
+            
+            .footer {
+                font-size: 11px;
+                padding: 11.2px; /* 减少30%左右的高度 */
+            }
+        }
+        
+        /* 平板设备和普通浏览器 */
+        @media screen and (min-width: 429px) {
+            body {
+                max-width: 428px;
+                margin: 0 auto;
+                border: 1px solid #e0e0e0;
+                box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            }
+            
+            .header {
+                font-size: 16px;
+                padding: 12px;
+            }
+            
+            .button {
+                font-size: 14px;
+                padding: 4px 8px;
+            }
+            
+            .subscreen-area {
+                font-size: 20px;
+            }
+            
+            .footer {
+                font-size: 11px;
+                padding: 11px; /* 减少30%左右的高度 */
+            }
+        }
+    </style>
 </head>
 <body>
-    <div class="container">
-        <h1>最简单的PWA应用</h1>
-        <p>这是一个可以在苹果手机上运行的PWA应用</p>
-        <button id="installBtn">安装应用</button>
+    <!-- 标题区 -->
+    <div class="header">
+        Battery Run Time Calculator
     </div>
+    
+    <!-- 按键区 -->
+    <div class="button-area">
+        <div class="button">Calc</div>
+        <div class="button">DfTime</div>
+        <div class="button">DfCost</div>
+        <div class="button">DfLoad</div>
+    </div>
+    
+    <!-- 子屏幕区域 -->
+    <div class="subscreen-area">
+        [子屏幕内容将在此显示]
+    </div>
+    
+    <!-- 注脚区 -->
+    <div class="footer">
+        (c) 2026
+    </div>
+    
     <script>
         // 检测是否支持PWA安装
         let deferredPrompt;
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
             deferredPrompt = e;
-            document.getElementById('installBtn').style.display = 'block';
         });
 
-        // 安装按钮点击事件
-        document.getElementById('installBtn').addEventListener('click', async () => {
-            if (deferredPrompt) {
-                deferredPrompt.prompt();
-                const { outcome } = await deferredPrompt.userChoice;
-                console.log(`用户选择: ${outcome}`);
-                deferredPrompt = null;
-                document.getElementById('installBtn').style.display = 'none';
-            }
+        // 简单的交互演示
+        const buttons = document.querySelectorAll('.button');
+        const subscreen = document.querySelector('.subscreen-area');
+        
+        // 页面加载完成后默认显示Calc子屏幕
+        window.addEventListener('load', () => {
+            subscreen.classList.add('subscreen-calc');
+            subscreen.textContent = 'Calc 子屏幕';
+            // 默认将Calc按钮设置为active状态
+            buttons[0].classList.add('active');
+        });
+        
+        buttons.forEach(button => {
+            button.addEventListener('click', () => {
+                const buttonText = button.textContent;
+                
+                // 移除所有按钮的active类
+                buttons.forEach(btn => btn.classList.remove('active'));
+                // 为当前点击的按钮添加active类
+                button.classList.add('active');
+                
+                // 移除所有子屏幕类
+                subscreen.classList.remove('subscreen-calc', 'subscreen-dftime', 'subscreen-dfcost', 'subscreen-dfload');
+                
+                // 根据按钮文本添加对应的子屏幕类
+                switch(buttonText) {
+                    case 'Calc':
+                        subscreen.classList.add('subscreen-calc');
+                        break;
+                    case 'DfTime':
+                        subscreen.classList.add('subscreen-dftime');
+                        break;
+                    case 'DfCost':
+                        subscreen.classList.add('subscreen-dfcost');
+                        break;
+                    case 'DfLoad':
+                        subscreen.classList.add('subscreen-dfload');
+                        break;
+                }
+                
+                subscreen.textContent = `${buttonText} 子屏幕`;
+                // 这里可以添加清空数据的逻辑
+            });
         });
 
         // 注册Service Worker
