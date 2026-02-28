@@ -83,6 +83,13 @@
             font-size: 18px;
             font-weight: 500;
             color: #333;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        /* 修复下拉刷新问题 */
+        body {
+            overscroll-behavior: auto;
         }
         
         /* 子屏幕背景颜色 */
@@ -247,8 +254,8 @@
         const buttons = document.querySelectorAll('.button');
         const subscreen = document.querySelector('.subscreen-area');
         
-        // 生成并显示时间戳的函数
-        function updateTimestamps() {
+        // 生成并显示时间戳的函数（只在应用生成时调用一次）
+        function setAppTimestamp() {
             const now = new Date();
             const timestamp = now.toLocaleString('zh-CN', {
                 year: 'numeric',
@@ -268,7 +275,7 @@
             // 更新子屏幕时间戳
             const subscreenTimestampElement = document.getElementById('subscreen-timestamp');
             if (subscreenTimestampElement) {
-                subscreenTimestampElement.textContent = '更新时间: ' + timestamp;
+                subscreenTimestampElement.textContent = '应用生成时间: ' + timestamp;
             }
         }
         
@@ -282,8 +289,8 @@
             // 默认将Calc按钮设置为active状态
             buttons[0].classList.add('active');
             
-            // 生成并显示时间戳
-            updateTimestamps();
+            // 生成并显示时间戳（只调用一次）
+            setAppTimestamp();
         });
         
         buttons.forEach(button => {
@@ -319,9 +326,6 @@
                 if (subscreenContent) {
                     subscreenContent.textContent = `${buttonText} 子屏幕`;
                 }
-                
-                // 更新时间戳
-                updateTimestamps();
                 
                 // 这里可以添加清空数据的逻辑
             });
